@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Lean / Lake build artifacts
+lean_project/.lake/
+lean_project/lake-manifest.json
+lean_project/build/
+lean_project/.lake/build/
+
+# Lean build outputs (uncomment if you don't want them committed)
+# lean_project/*.olean
+# lean_project/**/*.olean
+
+# Data files (large, regenerable)
+data/*.npz
+data/*.npy
+data/*.h5
+data/*.hdf5
+
+# Logs
+*.log
+logs/
+
+# Editor / OS
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Plots (regenerable)
+data/*.png
+data/*.pdf
+data/*.svg
+
+# Build outputs
+dist/
+build/
+*.egg

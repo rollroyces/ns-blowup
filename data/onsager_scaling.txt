@@ -1,0 +1,25 @@
+Onsager-critical sub-problem: scaling of peak dissipation rate
+============================================================
+IC names: ['simplified', 'antiparallel', 'axial_pert']
+N grid:   [64, 96, 128]
+viscosity: [0.005, 0.002]
+T = 0.05, dt = 2e-05
+total wall-clock = 5821.4s = 97.02 min
+
+For each (IC, nu), fit log(peak_rate) = alpha * log(N) + c.
+Leray bound predicts alpha <= 1 (D_N ~ N^alpha).
+
+IC            nu             alpha           c       R^2  raw peak rates
+------------------------------------------------------------------------
+simplified    0.005         -0.063      -1.102     0.198  2.61e-01  2.37e-01  2.52e-01
+simplified    0.002         -0.595       0.708     0.917  1.76e-01  1.25e-01  1.18e-01
+antiparallel  0.005         -0.193      -0.798     0.545  2.07e-01  1.73e-01  1.84e-01
+antiparallel  0.002         -0.814       1.465     0.946  1.51e-01  9.73e-02  8.71e-02
+axial_pert    0.005         -0.000       2.594     0.008  1.34e+01  1.34e+01  1.34e+01
+axial_pert    0.002         -0.004       2.608     0.879  1.33e+01  1.33e+01  1.33e+01
+
+Interpretation:
+  alpha ~ 0  : dissipation independent of N (could indicate singular blowup)
+  alpha ~ 1  : Leray bound tight (regularity borderline)
+  alpha ~ 2  : smooth Kolmogorov-like (gradient grows as N^2)
+

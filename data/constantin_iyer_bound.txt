@@ -1,0 +1,43 @@
+# Constantin-Iyer alignment bound (empirical)
+# Generated 2026-09-08
+#
+# Source: data/constantin_iyer_alignment.npz
+# Method: scripts/constantin_iyer_alignment.py
+#
+# Numerical setup:
+#   - Truncated spectral NS scheme (RK4, ν = 0.001, dt = 2e-5)
+#   - 3 ICs: simplified, antiparallel, axial_pert (all 1-periodic)
+#   - Resolutions: N ∈ {64, 128}
+#   - Time window: [0, 0.05], 52 output steps
+#   - At each step: compute ω = ∇×u, S = (∇u+∇u^T)/2, ξ_2 = 2nd eigvec(S)
+#   - Track θ(ω_max) := ∠(ω(x*,t), ξ_2(x*,t)) at the max-vorticity point
+#
+# This is the OBSERVED alignment angle for the truncated spectral scheme
+# at finite N. It is NOT the true NS limit (which would be 0 at a
+# hypothetical singular point). The bound is the empirical worst case
+# over all (IC, N) pairs and all timesteps n≥1.
+#
+# Three bounds (rad):
+#   C_all_incl_t0   = 1.5708   -- includes t=0, where the antiparallel
+#                                 IC has θ(ω_max) = π/2 (orthogonal)
+#   C_excl_t0       = 0.0747   -- excludes t=0; the dynamically-
+#                                 evolved flow has tight alignment
+#   C_simplified    = 0.0055   -- simplified IC at N=64 (the most
+#                                 studied case for the formalization)
+#
+# The Lean formalization `lean_project/ConstantinIyer.lean` uses the
+# worst-case C := 0.075 rad (≈ 4.29°), corresponding to "for every
+# n ≥ 1 and every (IC, N) tested, the alignment is at most 0.075
+# rad". This is a safe upper bound for all 6 (IC, N) runs.
+#
+# Per-resolution breakdown (excl. t=0):
+#   simplified  N=64    max θ(ω_max) = 0.0055 rad
+#   simplified  N=128   max θ(ω_max) = 0.0018 rad
+#   antiparallel N=64   max θ(ω_max) = 0.0469 rad
+#   antiparallel N=128  max θ(ω_max) = 0.0747 rad
+#   axial_pert  N=64    max θ(ω_max) = 0.0403 rad
+#   axial_pert  N=128   max θ(ω_max) = 0.0607 rad
+#
+# This bound is the formal statement's `C` parameter.
+
+C_EMPIRICAL_RAD = 0.075
