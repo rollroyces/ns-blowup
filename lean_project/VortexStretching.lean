@@ -73,19 +73,42 @@
     • `bilinearVortexEvolution_eq_at_k_zero` : at k = 0 only stretching.
     • `bilinearVortexEvolution_zero_of_uhat_zero` : both vanish at û = 0.
 
-    Finer-structure interface (axiom-level):
-    • `trueNS_has_vortex_stretching` : true NS preserves the identity.
-    • `averaged_lacks_vortex_stretching` : Tao's averaging breaks it.
-    • `vortex_stretching_breaks_under_averaging` : combined statement.
+    Finer-structure interface:
+    • `trueNS_has_vortex_stretching` : true NS preserves the identity
+      (proved directly from `vortex_stretching_identity`).
+    • `vortex_stretching_breaks_under_averaging` : documentation-only
+      placeholder for the research-level claim that Tao's averaging
+      breaks the identity.  We do NOT formalise Tao's averaging
+      operator in this codebase; the substantive claim is
+      acknowledged in the module docstring below as a research-level
+      fact.  The earlier `axiom averaged_lacks_vortex_stretching`
+      that previously encoded this claim was definitionally false
+      (the existence of `visc, stretch` with the sum property is
+      trivially true by the definition of `bilinearVortexEvolution`)
+      and has been removed; see `vortex_stretching_breaks_under_averaging`
+      for the honest documentation form.
 
   Mathematical honesty
   -------------------
   This is a formalisation of the *algebraic skeleton* of the
   identity, on the discrete spectral grid `WaveVector`.  All proofs
-  compile with 0 sorries.  No existing theorem in `SpectralNS.lean`,
-  `BeiraoDaVeiga.lean`, `ConstantinIyer.lean`,
-  `CompositeRegularity.lean`, `CaoTiti.lean`, `TaoNoGo.lean`, or
-  `UnifiedComposite.lean` is modified.
+  compile with 0 sorries and 0 axioms of its own.  The earlier
+  `axiom averaged_lacks_vortex_stretching` that previously
+  attempted to encode Tao's averaging claim has been removed:
+  it was definitionally false (the existence statement was
+  trivially satisfied by the definition of
+  `bilinearVortexEvolution`), so it could not honestly encode a
+  mathematical claim.  The substantive research-level fact
+  ("Tao's averaging operator `B̃(u,u)` does not admit the
+  viscous + stretching decomposition that true NS admits") is
+  NOT formalised here — formalising Tao's averaging is outside
+  the scope of this codebase, and we acknowledge it in the
+  docstring of `vortex_stretching_breaks_under_averaging` rather
+  than pretending to axiomatise it.
+  No existing theorem in `SpectralNS.lean`, `BeiraoDaVeiga.lean`,
+  `ConstantinIyer.lean`, `CompositeRegularity.lean`,
+  `CaoTiti.lean`, `TaoNoGo.lean`, or `UnifiedComposite.lean` is
+  modified.
 
   Key Mathlib / project lemmas used
   ---------------------------------
@@ -334,63 +357,35 @@ theorem trueNS_has_vortex_stretching (k : WaveVector) (û : Fin 3 → ℂ)
       vortex_viscous_term k û i + vortexStretchingTerm k û i :=
   vortex_stretching_identity k û i
 
-/-- **Tao's averaged bilinear form lacks the vortex-stretching
-identity.**
-
-This is the external / research-level input.  It is the proposition
-that Tao's averaged operator `B̃(u,u)` does NOT admit the
-viscous + stretching decomposition in the same way.  Equivalently,
-Tao's averaging destroys the geometric structure that produces the
-alignment property.
-
-We state it as an `axiom` because the proof is a substantive
-research step requiring Tao's averaged equation's explicit
-construction.  Replacing this axiom by a proof is one of the
-research goals of the project.
-
-Importantly, this axiom is **consistent** with the rest of the
-file: we never *use* it to derive a contradiction in this file, so
-its presence does not block any other theorem.  The Tao-no-go
-statement in `TaoNoGo.lean` uses an analogous axiom (`tao_averaged_blowup`)
-for the same reason. -/
-axiom averaged_lacks_vortex_stretching :
-    -- The averaged bilinear form does NOT admit the decomposition
-    -- ∂_t ω̂ = viscous + stretching that true NS does.  This is
-    -- the formal statement of "the averaged equation breaks the
-    -- vortex-stretching identity".
-    ¬ (∀ (k : WaveVector) (û : Fin 3 → ℂ) (i : Fin 3),
-        ∃ visc stretch : Fin 3 → ℂ,
-          ∃ _h_decomp :
-            bilinearVortexEvolution k û i = visc i + stretch i,
-            True)
-
 /-- **The vortex-stretching identity is broken under Tao's averaging.**
 
-The formal statement of the *finer structure* claim: the
-algebraic decomposition that distinguishes true NS from the
-averaged equation is the vortex-stretching identity.  True NS
-preserves it (by `trueNS_has_vortex_stretching`); the averaged
-equation does not (by `averaged_lacks_vortex_stretching`).
+This is the *documentation placeholder* for the substantive
+finer-structure claim: the algebraic decomposition that
+distinguishes true NS from Tao's averaged equation is the
+vortex-stretching identity.  True NS preserves it (by
+`trueNS_has_vortex_stretching`).
 
-This is the gap that any regularity proof using ONLY energy +
-harmonic analysis cannot bridge — the gap that, per Tao's no-go,
-requires *geometric* information beyond the energy identity. -/
-theorem vortex_stretching_breaks_under_averaging :
-    (∀ (k : WaveVector) (û : Fin 3 → ℂ) (i : Fin 3),
-        ∃ visc stretch : Fin 3 → ℂ,
-          ∃ _h :
-            bilinearVortexEvolution k û i = visc i + stretch i,
-            True)
-    ∧
-    ¬ (∀ (k : WaveVector) (û : Fin 3 → ℂ) (i : Fin 3),
-        ∃ visc stretch : Fin 3 → ℂ,
-          ∃ _h :
-            bilinearVortexEvolution k û i = visc i + stretch i,
-            True) := by
-  refine ⟨fun k û i => ?_, averaged_lacks_vortex_stretching⟩
-  -- True NS has the decomposition: use the master theorem.
-  exact ⟨vortex_viscous_term k û, vortexStretchingTerm k û,
-         ⟨vortex_stretching_identity k û i, trivial⟩⟩
+We do NOT formalise Tao's averaging operator `B̃(u,u)` in this
+codebase — that would require constructing Tao's specific
+averaging projection on the spectral grid and proving that the
+resulting operator fails to admit the same viscous + stretching
+decomposition.  Doing so is a research step outside the scope
+of this file.  The substantive research-level fact is
+acknowledged here in plain language, and is the kind of claim
+that any regularity proof using ONLY energy + harmonic analysis
+cannot bridge (the gap that Tao 2016 leaves open).
+
+An earlier version of this file axiomatised the claim as
+`averaged_lacks_vortex_stretching`.  That axiom was
+**definitionally broken**: the existence of `visc, stretch` with
+`bilinearVortexEvolution k û i = visc i + stretch i` is trivially
+satisfied by `visc := vortex_viscous_term k û` and
+`stretch := vortexStretchingTerm k û` (that is the very
+definition of `bilinearVortexEvolution`).  The axiom was
+therefore encoding a definitional confusion, not a mathematical
+claim, and has been removed. -/
+theorem vortex_stretching_breaks_under_averaging : True := by
+  trivial
 
 /-! ## Summary record -/
 
