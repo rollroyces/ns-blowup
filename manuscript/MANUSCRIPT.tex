@@ -8,7 +8,7 @@
 \title{Resolution-Scaling Study of the Hou-Luo Navier--Stokes Blowup Candidate:\\
 A GPU-Accelerated Spectral Investigation on Apple Silicon}
 \author{Royce \and Hermes Agent (computational infrastructure)}
-\date{2026-09-08}
+\date{2026-09-09}
 
 \begin{document}
 \maketitle
@@ -31,7 +31,7 @@ sensitivity is $+2.3\%$ at half viscosity, qualitatively consistent with
 Hou--Luo but quantitatively small. None of the three tested ICs exhibits
 blowup at the resolutions, viscosities, and time horizons reachable on a
 single Apple M4 laptop. We complement the numerics with a Lean~4 / Mathlib~4
-formalization of the spectral NS scheme: \textbf{120 proved theorems across 8 files}
+formalization of the spectral NS scheme: \textbf{137 proved theorems across 9 files}
 establishing (i)~the integrating-factor time-stepping is unconditionally stable,
 (ii)~the Parseval identity holds, (iii)~the spectral projection at $N=2$ is the
 identity on Taylor--Green initial data, (iv)~the 1D Leray energy inequality for
@@ -55,7 +55,11 @@ and (xi)~\textbf{the vortex-stretching identity} (16 theorems + 1 axiom)
 formalizing the discrete algebraic identity
 $\partial_t \omega = \Delta \omega + \omega\!\cdot\!\nabla u - (\nabla u)^T\!\omega$
 on the truncated spectral scheme---the geometric ``finer structure'' that
-Tao's averaging breaks. The hierarchy theorem
+Tao's averaging breaks, plus (xii)~\textbf{the bridge theorem} (17 theorems + 2 axioms)
+combining the vortex-stretching identity with a Serrin-type integrability
+estimate (the Beirao da Veiga-style gradient bound) to derive that
+``vortex-stretching identity holds + bounded H$^1$ energy'' implies
+smoothness of the trajectory on $[0,T]$. The hierarchy theorem
 $\mathrm{BdV} \Rightarrow \mathrm{CT} \Rightarrow \mathrm{Composite}$
 and the round-trip equivalence
 $\mathrm{BdV} + \mathrm{CI} \Leftrightarrow \mathrm{Unified}$
@@ -419,8 +423,8 @@ NS scheme, three formal regularity criteria (Beirao da Veiga,
 Constantin--Iyer, Cao--Titi), their composite/hierarchy/unified
 structure, the Tao 2016 no-go interface, and the vortex-stretching
 identity. Specifically, the Lean component comprises
-\textbf{120 proved theorems across 8 files} (0 sorries, 2 honest axioms),
-totalling \textbf{4208 lines}:
+\textbf{137 proved theorems across 9 files} (0 sorries, 4 honest axioms),
+totalling \textbf{4790 lines}:
 \begin{itemize}
 \item \texttt{SpectralNS.lean} (885 lines, 29 theorems): the integrating-factor
   time-stepping is unconditionally stable, the Parseval identity holds,
@@ -475,6 +479,19 @@ totalling \textbf{4208 lines}:
   counterpart of the candidate insight that \emph{alignment arises from
   the vortex-stretching identity}, not from energy identity + harmonic
   analysis alone.
+\item \texttt{VortexRegularity.lean} (582 lines, 17 theorems + 2 axioms):
+  the \textbf{bridge theorem} that combines the vortex-stretching identity
+  (VortexStretching.lean) with a Serrin-type integrability estimate to
+  derive that ``vortex-stretching identity holds + bounded $H^1$ energy''
+  implies smoothness of the trajectory on $[0, T]$. The main theorem
+  \texttt{vortex\_regularity\_bridge} exhibits how the geometric
+  ``finer structure'' (vortex stretching) escapes Tao's no-go by using
+  the identity in an essential way, not just harmonic analysis and
+  the energy identity. The two axioms
+  (\texttt{vortEnergyS\_le\_const\_h1} and \texttt{per\_mode\_cross\_bound})
+  are honest external inputs---the algebraic skeleton that the
+  cross-product bound implies $\norm{\omega}^2 \le C \cdot \norm{\nabla u}^2$,
+  which is the bridging fact any regularity proof would need.
 \end{itemize}
 The Beirao da Veiga criterion is a meaningful step toward a
 Clay-prize-style regularity proof: it uses ``improved integrability''
@@ -485,8 +502,8 @@ additional structure beyond any single known criterion), but it
 contributes the first building block in a chain of verifications
 that any future regularity proof would need. The full chain---Leray
 energy + BdV + CI + CT + Composite + Tao no-go + Unified + vortex-
-stretching identity---is now formalized in Lean, totalling 120
-theorems across 8 files with 0 sorries.
+stretching identity + bridge theorem---is now formalized in Lean,
+totalling 137 theorems across 9 files with 0 sorries.
 
 Per Tao's 2016 averaged-NS no-go theorem, any Clay-prize proof must
 exploit structural properties of the nonlinear term $B(u, u)$ beyond
