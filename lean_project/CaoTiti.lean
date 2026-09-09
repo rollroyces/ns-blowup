@@ -87,7 +87,7 @@
     - `beiraoDaVeiga_regularity_criterion`   (BeiraoDaVeiga)
 -/
 
-import NsSpectral
+import SpectralNS
 import BeiraoDaVeiga
 import ConstantinIyer
 import CompositeRegularity

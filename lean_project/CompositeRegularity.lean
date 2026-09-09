@@ -75,7 +75,7 @@
     - constantinIyer_alignment          : CI structural angle bound
 -/
 
-import NsSpectral
+import SpectralNS
 import BeiraoDaVeiga
 import ConstantinIyer
 

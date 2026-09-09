@@ -116,7 +116,7 @@
   - `waveIntegratingFactorStep_iter`        : scalar discrete iterate
 -/
 
-import NsSpectral
+import SpectralNS
 
 namespace NsSpectral
 

@@ -95,7 +95,7 @@
   - `Int.natAbs`, `Int.cast_zero`                   (core Lean / Mathlib)
 -/
 
-import NsSpectral
+import SpectralNS
 import BeiraoDaVeiga
 import ConstantinIyer
 import TaoNoGo

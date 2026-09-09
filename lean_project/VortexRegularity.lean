@@ -80,7 +80,8 @@
         existence of such a constant follows from the per-mode
         bound `‖ω̂(k)‖² ≤ 2 · ‖k‖² · ‖u(k)‖²` (the factor `2`
         absorbs the `‖a − b‖² ≤ 2‖a‖² + 2‖b‖²` triangle
-        inequality).  We state this as an axiom (`vortEnergyS_le_const_h1`)
+        inequality).  We state this as a lemma (`vortEnergyS_le_two_h1EnergyS`,
+        proved from the per-mode bound `per_mode_cross_bound`).
         for the algebraic skeleton of the bridge, consistent with
         the codebase's style of axiom-level external inputs
         (cf. `averaged_lacks_vortex_stretching` in
@@ -120,7 +121,7 @@
     • `vortEnergyS_nonneg`                  : nonneg.
 
     Algebraic skeleton (per-mode cross-product bound):
-    • `vortEnergyS_le_const_h1`             : ∑ ‖ω̂‖² ≤ 2 · ∑ ‖k‖² ‖u‖² (axiom).
+    • `vortEnergyS_le_two_h1EnergyS` : ∑ ‖ω̂‖² ≤ 2 · ∑ ‖k‖² ‖u‖² (proved).
     • `per_mode_cross_bound_intro`          : the per-mode bound's algebraic content.
 
     Serrin-type higher vorticity integrability:
@@ -158,7 +159,7 @@
       `Real.rpow_natCast`                    (Mathlib)
 -/
 
-import NsSpectral
+import SpectralNS
 import BeiraoDaVeiga
 import ConstantinIyer
 import TaoNoGo
@@ -219,33 +220,173 @@ lemma vortEnergyS_nonneg (uvec : vecSpectralField)
 
 /-! ## Algebraic skeleton: vorticity energy ≤ 2 · H¹ energy -/
 
-/-- **Per-mode cross-product bound (axiom-level).**  For each mode
-`k` and vector-valued field `uvec`, the discrete vorticity satisfies
+/-- **Cauchy-Schwarz for Fin 2 (real).** `(ac + bd)² ≤ (a² + b²)(c² + d²)`.
+This is the elementary two-dimensional Cauchy-Schwarz inequality,
+equivalent to `(ad − bc)² ≥ 0`.  Used in the per-mode bound. -/
+private lemma cs2_fin2 (a b c d : ℝ) :
+    (a * c + b * d) ^ 2 ≤ (a ^ 2 + b ^ 2) * (c ^ 2 + d ^ 2) := by
+  nlinarith [sq_nonneg (a * d - b * c)]
+
+/-- `‖a − b‖² ≤ (‖a‖ + ‖b‖)²` for `a b : ℂ`.  Follows from the
+triangle inequality `‖a − b‖ ≤ ‖a‖ + ‖b‖` by squaring. -/
+private lemma norm_diff_sq_le_sum_sq_complex (a b : ℂ) :
+    ‖a - b‖ ^ 2 ≤ (‖a‖ + ‖b‖) ^ 2 := by
+  exact (sq_le_sq₀ (norm_nonneg _) (by positivity)).mpr (norm_sub_le a b)
+
+/-- **Cyclic-sum identity for `Fin 3`.**  For any function
+`f : Fin 3 → ℝ`, summing `f (i + 1) + f (i + 2)` over `i` gives the
+total `∑ f` minus `f i` (since for each `i`, the set
+`{i + 1, i + 2}` equals `{0, 1, 2} \ {i}` as a set, and the sum of
+`f` over those two elements equals the total minus `f i`). -/
+private lemma fin3_twoSum_eq_total_minus_self (f : Fin 3 → ℝ) (i : Fin 3) :
+    f (i + 1) + f (i + 2) = (∑ j, f j) - f i := by
+  fin_cases i <;>
+    simp [Finset.sum_fin_eq_sum_range, Finset.sum_range_succ] <;>
+    ring
+
+private lemma fin3_twoSum_sq_complex (u : Fin 3 → ℂ) (i : Fin 3) :
+    ‖u (i + 1)‖ ^ 2 + ‖u (i + 2)‖ ^ 2 =
+      (∑ j, ‖u j‖ ^ 2) - ‖u i‖ ^ 2 := by
+  exact fin3_twoSum_eq_total_minus_self (fun j => ‖u j‖ ^ 2) i
+
+private lemma fin3_twoSum_sq_k (k : WaveVector) (i : Fin 3) :
+    ‖(k (i + 1) : ℂ)‖ ^ 2 + ‖(k (i + 2) : ℂ)‖ ^ 2 =
+      waveNormSq k - ‖(k i : ℂ)‖ ^ 2 := by
+  -- (∑ j, ‖(k j)‖²) = waveNormSq k by definition.
+  have hsum : ∑ j, ‖(k j : ℂ)‖ ^ 2 = waveNormSq k := by
+    simp [waveNormSq, Complex.norm_intCast, Finset.sum_fin_eq_sum_range,
+         Finset.sum_range_succ]
+  rw [show waveNormSq k - ‖(k i : ℂ)‖ ^ 2 =
+          (∑ j, ‖(k j : ℂ)‖ ^ 2) - ‖(k i : ℂ)‖ ^ 2 from by rw [hsum]]
+  exact fin3_twoSum_eq_total_minus_self (fun j => ‖(k j : ℂ)‖ ^ 2) i
+
+/-- **Diagonal ≤ product of sums.**  For nonneg `a, b : Fin 3 → ℝ`,
+the diagonal sum `∑ a_i b_i` is bounded by `(∑ a_i)(∑ b_i)`.  This
+is the trivial nonneg expansion `(∑ a)(∑ b) = ∑ a_i b_i + ∑_{i ≠ j} a_i b_j`
+with all off-diagonal terms nonneg. -/
+private lemma diag_le_product_sum_fin3 (a b : Fin 3 → ℝ)
+    (ha : ∀ i, 0 ≤ a i) (hb : ∀ i, 0 ≤ b i) :
+    ∑ i, a i * b i ≤ (∑ i, a i) * ∑ j, b j := by
+  -- Expand `(∑ a)(∑ b) = ∑_ij a_i b_j` and split off-diagonal/diagonal.
+  have hu : (Finset.univ : Finset (Fin 3)) = ({0, 1, 2} : Finset (Fin 3)) := by decide
+  rw [hu, Finset.sum_insert _, Finset.sum_insert _, Finset.sum_singleton]
+  rw [hu] at *
+  rw [Finset.sum_insert _, Finset.sum_insert _, Finset.sum_singleton,
+      Finset.sum_insert _, Finset.sum_insert _, Finset.sum_singleton]
+  ring_nf
+  linarith [ha 0, ha 1, ha 2, hb 0, hb 1, hb 2,
+            mul_nonneg (ha 0) (hb 1), mul_nonneg (ha 0) (hb 2),
+            mul_nonneg (ha 1) (hb 0), mul_nonneg (ha 1) (hb 2),
+            mul_nonneg (ha 2) (hb 0), mul_nonneg (ha 2) (hb 1)]
+  all_goals decide
+
+/-- **Per-mode cross-product bound (proved).**  For each mode `k`
+and vector-valued field `uvec`, the discrete vorticity satisfies
   `‖ω̂(k)‖² ≤ 2 · ‖k‖² · ‖u(k)‖²`,
 
 i.e. `∑_i ‖vorticity_hat k (uvec k) i‖² ≤ 2 · ‖k‖² · ‖u(k)‖²`.
 
-This is the *per-mode* algebraic skeleton of the cross-product
-inequality.  Its proof proceeds by expanding each component of the
-discrete vorticity
-  `ω̂(k)_i = I · (k_(i+1) · u(k)_(i+2) − k_(i+2) · u(k)_(i+1))`,
-applying `‖a − b‖² ≤ 2‖a‖² + 2‖b‖²` componentwise, and summing
-over `i ∈ Fin 3` with a cyclic re-indexing to recover the factor
-`2` (not `4`).  The full proof is a routine but tedious algebraic
-exercise.
-
-We state it as an `axiom` (rather than proving it directly) to
-keep this file focused on the *bridge* structure; replacing this
-axiom by a full algebraic proof is a routine task.  Importantly,
-this axiom is **consistent** with the rest of the file: we never
-*use* it to derive a contradiction.
-
-Note that the existing `vecNormSq : (Fin 3 → ℂ) → ℝ` in
-`ConstantinIyer.lean` is the same notion but at the per-vector
-level; we lift it to per-mode here. -/
-axiom per_mode_cross_bound (uvec : vecSpectralField) (k : WaveVector) :
+Proof structure:
+  (1) Per-component expansion: `‖ω̂(k) i‖² = ‖k_{i+1} u_{i+2} − k_{i+2} u_{i+1}‖²`
+      since `|I · z| = |z|`.
+  (2) Per-i bound: `|α − β|² ≤ (|α| + |β|)² ≤ (|k_{i+1}|² + |k_{i+2}|²)(|u_{i+1}|² + |u_{i+2}|²)`
+      by `‖a − b‖² ≤ (‖a‖ + ‖b‖)²` and 2D Cauchy-Schwarz
+      `(xy + zw)² ≤ (x² + z²)(y² + w²)`.
+  (3) Sum over `i ∈ Fin 3`.  By the cyclic identity
+      `{i+1, i+2} = {0,1,2} \ {i}`, the RHS sum is
+      `∑ (waveNormSq − |k_i|²)(uvecModeSqNorm − |u_i|²)`
+      `= waveNormSq · uvecModeSqNorm + ∑ |k_i|²|u_i|²`
+      `≤ 2 · waveNormSq · uvecModeSqNorm`,
+      the last using `∑ |k_i|²|u_i|² ≤ waveNormSq · uvecModeSqNorm`
+      for nonneg terms. -/
+lemma per_mode_cross_bound (uvec : vecSpectralField) (k : WaveVector) :
     ∑ i : Fin 3, ‖vorticity_hat k (uvec k) i‖ ^ 2 ≤
-      2 * (waveNormSq k * uvecModeSqNorm uvec k)
+      2 * (waveNormSq k * uvecModeSqNorm uvec k) := by
+  -- Per-i Cauchy-Schwarz cross-product bound.
+  have hper : ∀ i : Fin 3,
+      ‖vorticity_hat k (uvec k) i‖ ^ 2 ≤
+        ((‖(↑(k (i + 1)) : ℂ)‖ ^ 2 + ‖(↑(k (i + 2)) : ℂ)‖ ^ 2) *
+         (‖uvec k (i + 1)‖ ^ 2 + ‖uvec k (i + 2)‖ ^ 2)) := by
+    intro i
+    -- Per-component: ‖vorticity_hat k u i‖² = ‖α - β‖² where α = k_{i+1} u_{i+2}, β = k_{i+2} u_{i+1}.
+    have hexpand : ‖vorticity_hat k (uvec k) i‖ ^ 2 =
+        ‖(↑(k (i + 1)) : ℂ) * uvec k (i + 2) - (↑(k (i + 2)) : ℂ) * uvec k (i + 1)‖ ^ 2 := by
+      simp [vorticity_hat, Complex.norm_I, sq]
+    rw [hexpand]
+    set α : ℂ := (↑(k (i + 1)) : ℂ) * uvec k (i + 2) with hα_def
+    set β : ℂ := (↑(k (i + 2)) : ℂ) * uvec k (i + 1) with hβ_def
+    -- ‖α - β‖² ≤ (‖α‖ + ‖β‖)²
+    have h1 : ‖α - β‖ ^ 2 ≤ (‖α‖ + ‖β‖) ^ 2 :=
+      norm_diff_sq_le_sum_sq_complex α β
+    -- Multiplicativity of complex norm: ‖k · u‖ = |k| · ‖u‖
+    have hαnorm : ‖α‖ = ‖(↑(k (i + 1)) : ℂ)‖ * ‖uvec k (i + 2)‖ := by
+      rw [hα_def, Complex.norm_mul]
+    have hβnorm : ‖β‖ = ‖(↑(k (i + 2)) : ℂ)‖ * ‖uvec k (i + 1)‖ := by
+      rw [hβ_def, Complex.norm_mul]
+    -- 2D Cauchy-Schwarz: (ac + bd)² ≤ (a² + b²)(c² + d²)
+    have h2 : (‖α‖ + ‖β‖) ^ 2 ≤
+              (‖(↑(k (i + 1)) : ℂ)‖ ^ 2 + ‖(↑(k (i + 2)) : ℂ)‖ ^ 2) *
+              (‖uvec k (i + 1)‖ ^ 2 + ‖uvec k (i + 2)‖ ^ 2) := by
+      rw [hαnorm, hβnorm]
+      -- The CS2 goal has c² + d² ordered as ‖u (i+1)‖² + ‖u (i+2)‖² in
+      -- our LHS goal. Reorder the LHS factors to match CS2's (ac + bd) form.
+      have hswap : (‖uvec k (i + 1)‖ ^ 2 + ‖uvec k (i + 2)‖ ^ 2) =
+                   (‖uvec k (i + 2)‖ ^ 2 + ‖uvec k (i + 1)‖ ^ 2) := by ring
+      rw [hswap]
+      exact cs2_fin2 _ _ _ _
+    exact h1.trans h2
+  -- Sum the per-i bounds.
+  have hsum : ∑ i : Fin 3, ‖vorticity_hat k (uvec k) i‖ ^ 2 ≤
+              ∑ i : Fin 3,
+                ((‖(↑(k (i + 1)) : ℂ)‖ ^ 2 + ‖(↑(k (i + 2)) : ℂ)‖ ^ 2) *
+                 (‖uvec k (i + 1)‖ ^ 2 + ‖uvec k (i + 2)‖ ^ 2)) := by
+    exact Finset.sum_le_sum (fun i _ => hper i)
+  -- Cyclic-sum identity (as lemma).
+  have hcyc_sum : (∑ i : Fin 3,
+          ((‖(↑(k (i + 1)) : ℂ)‖ ^ 2 + ‖(↑(k (i + 2)) : ℂ)‖ ^ 2) *
+           (‖uvec k (i + 1)‖ ^ 2 + ‖uvec k (i + 2)‖ ^ 2))) =
+          ∑ i : Fin 3,
+            (waveNormSq k - ‖(↑(k i) : ℂ)‖ ^ 2) *
+              (uvecModeSqNorm uvec k - ‖uvec k i‖ ^ 2) := by
+    -- Show the goal by reducing both sides to the sum form and using cyclic identities.
+    -- Step 1: Replace LHS terms using cyclic identities.
+    have hL : (∑ i : Fin 3,
+          ((‖(↑(k (i + 1)) : ℂ)‖ ^ 2 + ‖(↑(k (i + 2)) : ℂ)‖ ^ 2) *
+           (‖uvec k (i + 1)‖ ^ 2 + ‖uvec k (i + 2)‖ ^ 2))) =
+          ∑ i : Fin 3,
+            (waveNormSq k - ‖(↑(k i) : ℂ)‖ ^ 2) *
+              ((∑ j, ‖uvec k j‖ ^ 2) - ‖uvec k i‖ ^ 2) := by
+      rw [Finset.sum_congr rfl (fun i _ => by
+        rw [fin3_twoSum_sq_k k i, fin3_twoSum_sq_complex (uvec k) i])]
+    rw [hL]
+    -- Step 2: Rewrite RHS using `uvecModeSqNorm uvec k = ∑ j, ‖uvec k j‖²`.
+    rw [show uvecModeSqNorm uvec k = ∑ j, ‖uvec k j‖ ^ 2 from rfl]
+  rw [hcyc_sum] at hsum
+  -- Expand ∑ (A − a_i)(B − b_i) = A·B + ∑ a_i b_i (for |Fin 3| = 3).
+  have hA_def : waveNormSq k = ∑ j, ‖(↑(k j) : ℂ)‖ ^ 2 := by
+    simp [waveNormSq, Complex.norm_intCast, Finset.sum_fin_eq_sum_range,
+         Finset.sum_range_succ]
+  have hB_def : uvecModeSqNorm uvec k = ∑ j, ‖uvec k j‖ ^ 2 := by
+    simp [uvecModeSqNorm, Finset.sum_fin_eq_sum_range, Finset.sum_range_succ]
+  have hsum_eq : ∑ i : Fin 3,
+      (waveNormSq k - ‖(↑(k i) : ℂ)‖ ^ 2) *
+        (uvecModeSqNorm uvec k - ‖uvec k i‖ ^ 2) =
+        waveNormSq k * uvecModeSqNorm uvec k +
+          ∑ i : Fin 3, ‖(↑(k i) : ℂ)‖ ^ 2 * ‖uvec k i‖ ^ 2 := by
+    rw [hA_def, hB_def]
+    simp [Finset.sum_fin_eq_sum_range, Finset.sum_range_succ]
+    ring
+  -- Diagonal bound.
+  have hpos_k : ∀ i, 0 ≤ ‖(↑(k i) : ℂ)‖ ^ 2 := fun _ => sq_nonneg _
+  have hpos_u : ∀ i, 0 ≤ ‖uvec k i‖ ^ 2 := fun _ => sq_nonneg _
+  have hdiag : ∑ i : Fin 3, ‖(↑(k i) : ℂ)‖ ^ 2 * ‖uvec k i‖ ^ 2 ≤
+                waveNormSq k * uvecModeSqNorm uvec k := by
+    rw [hA_def, hB_def]
+    exact diag_le_product_sum_fin3 (fun i => ‖(↑(k i) : ℂ)‖ ^ 2)
+      (fun i => ‖uvec k i‖ ^ 2) hpos_k hpos_u
+  rw [hsum_eq] at hsum
+  -- Conclude: ∑ ‖ω‖² ≤ A·B + diag ≤ A·B + A·B = 2·A·B.
+  linarith [hdiag]
 
 /-- **Summed vorticity-energy bound.**  The discrete vorticity L²-
 energy on `S` is bounded by `2 · vecH1EnergyS(uvec, S)`.  This

@@ -99,7 +99,7 @@
                                       universal-existential
 -/
 
-import NsSpectral
+import SpectralNS
 import BeiraoDaVeiga
 import ConstantinIyer
 import CompositeRegularity

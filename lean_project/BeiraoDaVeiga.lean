@@ -40,7 +40,7 @@
     - `noBlowup_3D` (from NsSpectral) : per-mode L² non-expansion
 -/
 
-import NsSpectral
+import SpectralNS
 
 namespace NsSpectral
 
