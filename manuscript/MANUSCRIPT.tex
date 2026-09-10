@@ -5,24 +5,30 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{hyperref}
 
-\title{Resolution-Scaling Study of the Hou-Luo Navier--Stokes Blowup Candidate:\\
-A GPU-Accelerated Spectral Investigation on Apple Silicon}
+\title{Lean~4 Formalization and Reproducible Empirical Study of the\\
+Hou--Luo Navier--Stokes Blowup Candidate on Apple Silicon:\\
+A Spectral Investigation with 161 Proved Theorems}
 \author{Royce \and Hermes Agent (computational infrastructure)}
-\date{2026-09-09}
+\date{2026-09-10}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-We investigate the finite-time blowup candidate of Hou \& Luo (2014) for the
-3D axisymmetric Navier--Stokes equations with swirl. Using a spectral Fourier
+This manuscript documents two complementary contributions: an empirical,
+reproducible numerical study of the Hou \& Luo (2014) finite-time blowup
+candidate for the 3D axisymmetric Navier--Stokes equations with swirl,
+and a complete Lean~4 / Mathlib~4 formalization of the underlying
+truncated spectral NS scheme.
+
+\textbf{Numerical study (commodity hardware).} Using a spectral Fourier
 method on a periodic box, we perform a multi-resolution, multi-viscosity,
 multi-IC scaling study at grid resolutions $N \in \{64, 128, 192\}$, with
 time horizons up to $T = 0.15$. Our implementation uses PyTorch with Metal
 Performance Shaders (MPS) on Apple M-series hardware, achieving
-$\sim$15--30$\times$ speedup over pure NumPy. We test three initial conditions: a
-simplified Hou-Luo-family IC, an antiparallel vortex pair, and a single
-vortex with axial perturbation. The central finding is that the
+$\sim$15--30$\times$ speedup over pure NumPy. We test three initial conditions:
+a simplified Hou-Luo-family IC, an antiparallel vortex pair, and a single
+vortex with axial perturbation. The central empirical finding is that the
 cross-resolution ratio $\max|\omega|(N{=}128) / \max|\omega|(N{=}64)$
 \textbf{peaks at $T \approx 0.06$ and decreases thereafter}---the opposite of
 what a finite-time blowup would produce. Time discretization is verified
@@ -30,42 +36,51 @@ converged to relative error $6 \times 10^{-5}$ at $T = 0.10$. Viscosity
 sensitivity is $+2.3\%$ at half viscosity, qualitatively consistent with
 Hou--Luo but quantitatively small. None of the three tested ICs exhibits
 blowup at the resolutions, viscosities, and time horizons reachable on a
-single Apple M4 laptop. We complement the numerics with a Lean~4 / Mathlib~4
-formalization of the spectral NS scheme: \textbf{137 proved theorems across 9 files}
-establishing (i)~the integrating-factor time-stepping is unconditionally stable,
-(ii)~the Parseval identity holds, (iii)~the spectral projection at $N=2$ is the
-identity on Taylor--Green initial data, (iv)~the 1D Leray energy inequality for
-the truncated scheme, (v)~the 3D Leray energy inequality---the formal Lean
-statement that the $L^2$ energy over any finite mode set stays bounded by the
-initial energy for all time steps, proved per-mode using the fact that each
-Fourier mode decays independently under the integrating-factor step, and
-(vi)~\textbf{the Beirao da Veiga regularity criterion for the truncated spectral
-NS scheme}---a formal Lean statement of the classical Beirao da Veiga (1984)
-sufficient condition for NS regularity, plus (vii)~\textbf{the Constantin--Iyer
-alignment property} (22 theorems) formalizing the vorticity--strain alignment
-angle $\theta$ as a spectral object with provable bound $\theta \le \pi$,
-(viii)~\textbf{the Cao--Titi directional regularity criterion} (19 theorems)
-with the Lean proof that BdV $\Rightarrow$ CT (directional regularity is
-implied by full-gradient regularity), (ix)~\textbf{the Tao 2016 no-go
-interface} (5 theorems + 1 axiom) axiomatizing that any regularity proof using
-only harmonic analysis + energy identity is impossible, (x)~\textbf{the
-unified-composite theorem} (17 theorems) showing the three criteria unify
-into a single statement with forward, reverse, and round-trip hierarchy,
-and (xi)~\textbf{the vortex-stretching identity} (16 theorems + 1 axiom)
-formalizing the discrete algebraic identity
-$\partial_t \omega = \Delta \omega + \omega\!\cdot\!\nabla u - (\nabla u)^T\!\omega$
-on the truncated spectral scheme---the geometric ``finer structure'' that
-Tao's averaging breaks, plus (xii)~\textbf{the bridge theorem} (17 theorems + 2 axioms)
-combining the vortex-stretching identity with a Serrin-type integrability
-estimate (the Beirao da Veiga-style gradient bound) to derive that
-``vortex-stretching identity holds + bounded H$^1$ energy'' implies
-smoothness of the trajectory on $[0,T]$. The hierarchy theorem
+single Apple M4 laptop.
+
+\textbf{Lean~4 / Mathlib~4 formalization.} We complement the numerics with a
+formal-methods contribution: \textbf{161 proved theorems across 11 files},
+\textbf{0 sorries}, and \textbf{1 irreducible axiom} (Tao's 2016 averaged-NS
+blowup theorem), totalling 5996 lines of Lean. The formalization establishes,
+for the \emph{truncated spectral NS scheme at finite $N$}: (i)~the
+integrating-factor time-stepping is unconditionally stable, (ii)~the Parseval
+identity holds, (iii)~the spectral projection at $N=2$ is the identity on
+Taylor--Green initial data, (iv)~the 1D and 3D Leray energy inequalities,
+(v)~\textbf{the Beirao da Veiga regularity criterion for the truncated scheme},
+(vi)~\textbf{the Constantin--Iyer alignment property} (22 theorems)
+formalizing the vorticity--strain alignment angle $\theta$ with provable
+bound $\theta \le \pi$, (vii)~\textbf{the Cao--Titi directional regularity
+criterion} (19 theorems) with the Lean proof that BdV $\Rightarrow$ CT,
+(viii)~\textbf{the Tao 2016 no-go interface} (5 theorems + 1 axiom)
+axiomatizing that regularity using only harmonic analysis + energy identity
+is impossible, (ix)~\textbf{the unified-composite theorem} (17 theorems)
+joining BdV, CI, and CT with forward, reverse, and round-trip hierarchy,
+(x)~\textbf{the vortex-stretching identity} (16 theorems) on the truncated
+spectral scheme---the geometric ``finer structure'' that Tao's averaging
+breaks---with \textbf{0 axioms} (the previously-broken
+\texttt{averaged\_lacks\_vortex\_stretching} axiom was removed),
+(xi)~\textbf{the bridge theorem} (24 theorems, 0 axioms) combining the
+vortex-stretching identity with a Serrin-type integrability estimate to
+derive that ``vortex-stretching identity + bounded $H^1$ energy'' implies
+smoothness of the trajectory on $[0,T]$, (xii)~\textbf{the discrete
+Ladyzhenskaya inequality} (9 theorems, LadyzhenskayaDiscrete.lean), a Lean
+\emph{proof} (not an axiom) of the discrete cross-product bound $\|\omega\|^2
+\le C \cdot \|\nabla u\|^2$ using finite-sum Cauchy--Schwarz, and
+(xiii)~\textbf{the uniform-in-$N$ component of the discrete-to-continuous
+bridge} (8 theorems, UniformInN.lean), showing the Ladyzhenskaya $L^4$
+bound depends only on $L^2$ and $H^1$ energy values, not on the cardinality
+of the mode set $S$. The hierarchy theorem
 $\mathrm{BdV} \Rightarrow \mathrm{CT} \Rightarrow \mathrm{Composite}$
 and the round-trip equivalence
 $\mathrm{BdV} + \mathrm{CI} \Leftrightarrow \mathrm{Unified}$
-are proved in Lean. The Clay Millennium problem remains
-open; this manuscript documents the methods and reproducible findings of a
-numerical and formal investigation on commodity hardware.
+are proved in Lean.
+
+\textbf{Scope.} This manuscript documents the methods and reproducible
+findings of a numerical and formal investigation on commodity hardware. It
+is \textbf{not} a contribution to the Clay Millennium problem. The Lean
+theorems apply to the truncated spectral NS scheme at finite $N$; the
+discrete-to-continuous bridge is not formalized; continuous NS at infinite
+resolution is out of scope. The Clay problem remains open.
 \end{abstract}
 
 
@@ -389,18 +404,45 @@ do not support such a claim.
 
 \section{6. Limitations}
 
+\begin{itemize}
 \item **Hardware:** Apple M4 with 17.2 GB unified memory caps resolution at
-  \(N = 192\) (OOMs at \(N = 256\)).
+  $N = 192$ (OOMs at $N = 256$).
 \item **Precision:** complex64 (float32) loses $\sim 7$ decimal digits,
   restricting the dynamic range over which energy decay can be measured.
 \item **Initial conditions:** All three tested ICs are simplified family
-  members of the published Hou–Luo form. The exact IC has not been
+  members of the published Hou--Luo form. The exact IC has not been
   reproduced.
 \item **Time horizon:** $T \le 0.15$. Published numerics reach $T^* \approx 0.035$
   for the exact IC, which is shorter but in a different (untested)
   parameter regime.
 \item **Clay Millennium problem:** This work does not address the regularity
-  question — that requires a theorem, not numerics.
+  question --- that requires a theorem, not numerics.
+\item **Lean scope --- truncated scheme only:** All 161 Lean theorems are
+  stated and proved for the \emph{truncated} spectral NS scheme at finite
+  resolution $N$. They do not address the continuous NS equation at
+  infinite resolution. The truncated scheme is a finite ODE system on a
+  finite-dimensional Fourier mode space; the passage to continuous NS is
+  a separate limit argument.
+\item **Lean scope --- discrete-to-continuous bridge not formalized:** The
+  passage from the truncated scheme at finite $N$ to the continuous NS
+  PDE (e.g. via a Lions--Foias compactness or Kolmogorov-Riesz compactness
+  argument at the PDE level) is \emph{not} part of this formalization.
+  UniformInN.lean provides one structural component of such a bridge
+  (the $L^4$ bound depends on $L^2$ and $H^1$ energy values, not on
+  $|S|$), but does not close the gap.
+\item **Lean scope --- not a Clay problem contribution:** This work does
+  not solve the Clay Millennium problem and does not claim to. The Lean
+  formalization is a self-contained formal-methods contribution to the
+  truncated spectral scheme. The structural properties of continuous NS
+  that would be needed for a Clay-prize proof (compactness in the
+  sense of Lions--Foias, weak-strong uniqueness, global Leray
+  regularity) are not addressed.
+\item **Numerical vs.\ formal:** The numerics show no blowup in the
+  testable parameter regime. The Lean formalization proves smoothness
+  \emph{under explicit assumptions} (finite $N$, bounded $H^1$ energy,
+  existence of vortex-stretching identity) --- it does not produce
+  global regularity from data alone.
+\end{itemize}
 
 
 \section{7. Conclusion}
@@ -414,26 +456,24 @@ testable parameter regime. The Clay Millennium problem remains open.
 \textbf{This work is not a contribution to the Clay Millennium problem.} It
 is a deliverable for a small-scale numerical methods study documenting
 what commodity hardware can do, with the explicit acknowledgement that
-reproducing published Hou–Luo numerics requires \(\sim 10{,}000\times\)
+reproducing published Hou--Luo numerics requires $\sim 10{,}000\times$
 more compute than this campaign.
 
-What this work \emph{does} contribute is a formal Lean~4 / Mathlib~4
-verification of the energy-inequality infrastructure for the spectral
-NS scheme, three formal regularity criteria (Beirao da Veiga,
-Constantin--Iyer, Cao--Titi), their composite/hierarchy/unified
-structure, the Tao 2016 no-go interface, and the vortex-stretching
-identity. Specifically, the Lean component comprises
-\textbf{137 proved theorems across 9 files} (0 sorries, 4 honest axioms),
-totalling \textbf{4790 lines}:
+What this work \emph{does} contribute is a complete Lean~4 / Mathlib~4
+formalization of the truncated spectral NS scheme and one specific
+structural component of the discrete-to-continuous bridge. The Lean
+component comprises \textbf{161 proved theorems across 11 files} with
+\textbf{0 sorries} and \textbf{1 irreducible axiom}
+(\texttt{tao\_averaged\_blowup} in TaoNoGo.lean), totalling
+\textbf{5996 lines}:
 \begin{itemize}
 \item \texttt{SpectralNS.lean} (885 lines, 29 theorems): the integrating-factor
   time-stepping is unconditionally stable, the Parseval identity holds,
   the spectral projection at $N = 2$ is the identity on Taylor--Green
-  initial data, the 1D Leray energy inequality holds, and the 3D Leray
-  energy inequality holds per-mode.
+  initial data, and the 1D and 3D Leray energy inequalities hold per-mode.
 \item \texttt{BeiraoDaVeiga.lean} (277 lines, 5 theorems): a formal
   statement of the classical Beirao da Veiga (1984) sufficient condition
-  for NS regularity---a spectral trajectory with finite initial $H^1$
+  for NS regularity --- a spectral trajectory with finite initial $H^1$
   energy on a finite mode set is automatically smooth on $[0, T]$, and
   the higher-integrability quantity $\sum_{k \in S} (\|k\| \cdot \|u_n(k)\|)^{2q}$
   is uniformly bounded in $n$ for every integer $q \ge 1$.
@@ -464,22 +504,24 @@ totalling \textbf{4790 lines}:
   \texttt{UsesOnlyHarmonicAnalysisAndEnergy}, and proves that any
   regularity proof using only these two structures transfers to Tao's
   averaged equation, which has finite-time blowup. The single axiom
-  \texttt{tao\_averaged\_blowup} is the substantive external input.
+  \texttt{tao\_averaged\_blowup} is the substantive external input;
+  it is the only irreducible axiom in the codebase.
 \item \texttt{UnifiedComposite.lean} (881 lines, 17 theorems): the
   unified-composite regularity statement joining all three criteria
   (BdV, CI, CT) into one conjunction, plus the hierarchy theorem
   \texttt{finerStructureCriterionHierarchy} (forward: BdV $\Rightarrow$ CT,
   CT + CI $\Rightarrow$ Unified) and the round-trip theorem
   \texttt{finerStructureCriterionRoundTrip} (BdV + CI $\Leftrightarrow$ Unified).
-\item \texttt{VortexStretching.lean} (479 lines, 16 theorems + 1 axiom):
+\item \texttt{VortexStretching.lean} (474 lines, 16 theorems, 0 axioms):
   formalization of the discrete vortex-stretching identity
   $\partial_t \omega = -|k|^2 \omega + \omega\!\cdot\!\nabla u - (\nabla u)^T\!\omega$
   on the truncated spectral scheme. This is the geometric
-  ``finer structure'' that Tao's averaging breaks, and it is the formal
-  counterpart of the candidate insight that \emph{alignment arises from
-  the vortex-stretching identity}, not from energy identity + harmonic
-  analysis alone.
-\item \texttt{VortexRegularity.lean} (582 lines, 17 theorems + 2 axioms):
+  ``finer structure'' that Tao's averaging breaks. The previously
+  stated axiom \texttt{averaged\_lacks\_vortex\_stretching} was
+  removed from the codebase: it was definitionally broken
+  (the term-by-term cancellation it asserted was a no-op on
+  the truncated scheme). The current file is axiom-free.
+\item \texttt{VortexRegularity.lean} (981 lines, 24 theorems, 0 axioms):
   the \textbf{bridge theorem} that combines the vortex-stretching identity
   (VortexStretching.lean) with a Serrin-type integrability estimate to
   derive that ``vortex-stretching identity holds + bounded $H^1$ energy''
@@ -487,38 +529,67 @@ totalling \textbf{4790 lines}:
   \texttt{vortex\_regularity\_bridge} exhibits how the geometric
   ``finer structure'' (vortex stretching) escapes Tao's no-go by using
   the identity in an essential way, not just harmonic analysis and
-  the energy identity. The two axioms
+  the energy identity. Both previously-listed axioms
   (\texttt{vortEnergyS\_le\_const\_h1} and \texttt{per\_mode\_cross\_bound})
-  are honest external inputs---the algebraic skeleton that the
-  cross-product bound implies $\norm{\omega}^2 \le C \cdot \norm{\nabla u}^2$,
-  which is the bridging fact any regularity proof would need.
+  were \emph{proved} in this file and removed from the axiom list.
+\item \texttt{LadyzhenskayaDiscrete.lean} (480 lines, 9 theorems, 0 axioms):
+  the discrete Ladyzhenskaya inequality on the truncated spectral
+  scheme. The cross-product bound $\|\omega\|^2 \le C \cdot \|\nabla u\|^2$
+  is proved from finite-sum Cauchy--Schwarz and a per-mode squaring
+  argument, not axiomatized. This formalizes the algebraic skeleton that
+  the bridge theorem (VortexRegularity.lean) uses to connect
+  vortex-stretching geometry to Serrin integrability.
+\item \texttt{UniformInN.lean} (332 lines, 8 theorems, 0 axioms): the
+  uniform-in-$N$ component of the discrete-to-continuous bridge. Proves
+  that the discrete Ladyzhenskaya $L^4$ bound on the spectral mode
+  sum depends only on the actual $L^2$ and $H^1$ energy values of the
+  field, not on the cardinality of the index set $S$. This is one
+  structural property that a future discrete-to-continuous argument
+  could build on; it does not by itself close the gap to continuous NS.
 \end{itemize}
-The Beirao da Veiga criterion is a meaningful step toward a
-Clay-prize-style regularity proof: it uses ``improved integrability''
-beyond the Leray energy identity, which Tao (2016) proved is necessary
-for any regularity proof of the true NS equation. The Lean
-formalization does not solve the Clay problem (which requires
-additional structure beyond any single known criterion), but it
-contributes the first building block in a chain of verifications
-that any future regularity proof would need. The full chain---Leray
-energy + BdV + CI + CT + Composite + Tao no-go + Unified + vortex-
-stretching identity + bridge theorem---is now formalized in Lean,
-totalling 137 theorems across 9 files with 0 sorries.
 
-Per Tao's 2016 averaged-NS no-go theorem, any Clay-prize proof must
-exploit structural properties of the nonlinear term $B(u, u)$ beyond
-harmonic analysis and the energy identity alone. The Beirao da Veiga
-criterion (this work) is one candidate for such a structure; other
-candidates in the literature include the Constantin--Iyer alignment
-property at hypothetical singular points, the Cao--Titi geostrophic
-balance for primitive equations, and convex-integration-based
-constructions of wild solutions. This work formalizes the first three
-in Lean and proves their hierarchical and composite structure. The
-\textbf{vortex-stretching identity} (VortexStretching.lean) is the
-formal counterpart of the candidate insight that
-\emph{alignment is a consequence of the vortex-stretching geometry},
-not an independent structural property. Identifying which of these
-(or which combination) constitutes the ``finer structure'' required by
+\textbf{What this code base is.} The Lean formalization is a complete
+formal-methods package for the truncated spectral NS scheme, comprising:
+(a)~the integrating-factor time-stepping, (b)~the Leray energy
+inequality, (c)~three regularity criteria (BdV, CI, CT), (d)~their
+hierarchical and composite structure, (e)~the Tao 2016 no-go interface
+(1 irreducible axiom), (f)~the discrete vortex-stretching identity,
+(g)~the bridge theorem combining VS + Serrin, (h)~the discrete
+Ladyzhenskaya inequality (proved in Lean, not axiomatized), and
+(i)~the uniform-in-$N$ component of the discrete-to-continuous
+bridge. \textbf{0 sorries}, \textbf{1 irreducible axiom}. The Clay
+Millennium problem remains open. This work does not solve it.
+
+Per Tao's 2016 averaged-NS no-go theorem, any regularity proof of the
+\emph{continuous} NS equation must use structural properties of the
+nonlinear term $B(u, u)$ beyond harmonic analysis and the energy
+identity alone. The Lean formalization of the vortex-stretching
+identity (VortexStretching.lean) and the discrete Ladyzhenskaya
+inequality (LadyzhenskayaDiscrete.lean) are formalizations of two
+such structural properties on the \emph{truncated} spectral scheme.
+Formalizing the use of these properties for the continuous NS equation
+at infinite resolution --- which would require a Lions--Foias
+compactness argument or analogous PDE-level machinery --- is out of
+scope of this codebase.
+
+\textbf{What the Lean work proves (and does not).} The Lean component
+proves, end-to-end, a complete formal statement that the truncated
+spectral NS scheme at finite $N$ is smooth on $[0, T]$, using the
+Leray energy inequality, the discrete Ladyzhenskaya inequality (proved
+in Lean), the vortex-stretching identity (proved in Lean), and a
+Serrin-type integrability estimate (the Beirao da Veiga-style gradient
+bound). This is a real Lean theorem, not an axiomatization. What the
+Lean work \emph{does not} prove: the regularity of continuous NS at
+infinite resolution (the Clay Millennium problem), nor the bridge
+from finite $N$ to continuous NS (which would require a Lions--Foias
+or Kolmogorov-Riesz compactness argument at the PDE level, out of
+scope). The Ladyzhenskaya inequality formalized in Lean is the
+\emph{discrete} version (finite-sum + Cauchy--Schwarz); the continuous
+version (Sobolev embedding + Gagliardo--Nirenberg interpolation) is a
+separate, harder theorem that this codebase does not address.
+
+Identifying which structural property (or which combination) of
+continuous NS would constitute the ``finer structure'' required by
 Tao's no-go remains an open research problem; this manuscript
 documents the formal infrastructure and reproducible findings of a
 numerical and Lean-based investigation on commodity hardware.
