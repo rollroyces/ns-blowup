@@ -7,7 +7,7 @@
 
 \title{Lean~4 Formalization and Reproducible Empirical Study of the\\
 Hou--Luo Navier--Stokes Blowup Candidate on Apple Silicon:\\
-A Spectral Investigation with 161 Proved Theorems}
+A Spectral Investigation with 160 Proved Theorems}
 \author{Royce \and Hermes Agent (computational infrastructure)}
 \date{2026-09-10}
 
@@ -38,10 +38,10 @@ Hou--Luo but quantitatively small. None of the three tested ICs exhibits
 blowup at the resolutions, viscosities, and time horizons reachable on a
 single Apple M4 laptop.
 
-\textbf{Lean~4 / Mathlib~4 formalization.} We complement the numerics with a
-formal-methods contribution: \textbf{161 proved theorems across 11 files},
+Lean~4 / Mathlib~4 formalization. We complement the numerics with a
+formal-methods contribution: \textbf{160 proved theorems across 11 files},
 \textbf{0 sorries}, and \textbf{1 irreducible axiom} (Tao's 2016 averaged-NS
-blowup theorem), totalling 5996 lines of Lean. The formalization establishes,
+blowup theorem), totalling 5998 lines of Lean. The formalization establishes,
 for the \emph{truncated spectral NS scheme at finite $N$}: (i)~the
 integrating-factor time-stepping is unconditionally stable, (ii)~the Parseval
 identity holds, (iii)~the spectral projection at $N=2$ is the identity on
@@ -59,7 +59,7 @@ joining BdV, CI, and CT with forward, reverse, and round-trip hierarchy,
 spectral scheme---the geometric ``finer structure'' that Tao's averaging
 breaks---with \textbf{0 axioms} (the previously-broken
 \texttt{averaged\_lacks\_vortex\_stretching} axiom was removed),
-(xi)~\textbf{the bridge theorem} (24 theorems, 0 axioms) combining the
+(xi)~\textbf{the bridge theorem} (23 theorems, 0 axioms) combining the
 vortex-stretching identity with a Serrin-type integrability estimate to
 derive that ``vortex-stretching identity + bounded $H^1$ energy'' implies
 smoothness of the trajectory on $[0,T]$, (xii)~\textbf{the discrete
@@ -425,7 +425,7 @@ do not support such a claim.
   parameter regime.
 \item **Clay Millennium problem:** This work does not address the regularity
   question --- that requires a theorem, not numerics.
-\item **Lean scope --- truncated scheme only:** All 161 Lean theorems are
+\item **Lean scope --- truncated scheme only:** All 160 Lean theorems are
   stated and proved for the \emph{truncated} spectral NS scheme at finite
   resolution $N$. They do not address the continuous NS equation at
   infinite resolution. The truncated scheme is a finite ODE system on a
@@ -470,10 +470,10 @@ more compute than this campaign.
 What this work \emph{does} contribute is a complete Lean~4 / Mathlib~4
 formalization of the truncated spectral NS scheme and one specific
 structural component of the discrete-to-continuous bridge. The Lean
-component comprises \textbf{161 proved theorems across 11 files} with
+to-continuous bridge. The Lean component comprises \textbf{160 proved theorems across 11 files} with
 \textbf{0 sorries} and \textbf{1 irreducible axiom}
 (\texttt{tao\_averaged\_blowup} in TaoNoGo.lean), totalling
-\textbf{5996 lines}:
+\textbf{5998 lines}:
 \begin{itemize}
 \item \texttt{SpectralNS.lean} (885 lines, 29 theorems): the integrating-factor
   time-stepping is unconditionally stable, the Parseval identity holds,
@@ -529,7 +529,7 @@ component comprises \textbf{161 proved theorems across 11 files} with
   removed from the codebase: it was definitionally broken
   (the term-by-term cancellation it asserted was a no-op on
   the truncated scheme). The current file is axiom-free.
-\item \texttt{VortexRegularity.lean} (981 lines, 24 theorems, 0 axioms):
+\item \texttt{VortexRegularity.lean} (981 lines, 23 theorems, 0 axioms):
   the \textbf{bridge theorem} that combines the vortex-stretching identity
   (VortexStretching.lean) with a Serrin-type integrability estimate to
   derive that ``vortex-stretching identity holds + bounded $H^1$ energy''
