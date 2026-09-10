@@ -5,7 +5,7 @@ package «ns_spectral»
 
 @[default_target]
 lean_lib «NsSpectral» {
-  roots := #[`SpectralNS, `BeiraoDaVeiga, `ConstantinIyer, `CompositeRegularity, `CaoTiti, `TaoNoGo, `UnifiedComposite, `VortexStretching, `VortexRegularity]
+  roots := #[`SpectralNS, `BeiraoDaVeiga, `ConstantinIyer, `CompositeRegularity, `CaoTiti, `TaoNoGo, `UnifiedComposite, `VortexStretching, `VortexRegularity, `LadyzhenskayaDiscrete]
 }
 
 require mathlib from git "https://github.com/leanprover-community/mathlib4.git"
