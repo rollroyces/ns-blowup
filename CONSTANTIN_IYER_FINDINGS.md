@@ -181,3 +181,109 @@ with resolution. This is a candidate "finer structure" for use in
 any future regularity proof, but does not itself prove regularity.
 
 The Clay Millennium problem remains open.
+
+
+---
+
+## Appendix: Modern alignment analysis (2024–2026)
+
+**Added 2026-09-10** after the alignment-decay literature survey
+(`ALIGNMENT_DECAY_LITERATURE_2026.md`). Goal: locate any *published*
+analytic estimate of the alignment angle $\theta$ as a function of
+resolution $N$ or of time $t$. Detailed paper-by-paper review in
+`ALIGNMENT_DECAY_LITERATURE_2026.md`; concise summary here.
+
+### A.1 Haller 2024 (Encinas-Bartos & Haller, arXiv:2310.17267)
+- **Title.** *Vorticity alignment with Lyapunov vectors and
+  rate-of-strain eigenvectors*, European J. Mech. B/Fluids 105
+  (2024), 259–274 (arXiv Oct 2023).
+- **Result (Thm 2, Eqs. 59–60).** For viscous 3D flow with pointwise
+  bounded vorticity, along a Lagrangian trajectory $x(t; t_0, x_0)$
+  the projection of $\omega(t)$ onto the strain eigenvectors obeys
+  asymptotic bounds of the form
+  $L^{t_0 + \Delta t}_{t_0 - \Delta t}(x_0) \le C \cdot
+  e^{-(\mu_3^+ - \mu_1^-)\Delta t}$,
+  i.e. **exponential-in-time decay** of the angle between $\omega$ and
+  the orthogonal complement of the intermediate eigenvector, at a rate
+  set by the gap between the dominant forward / backward Lyapunov
+  exponents.
+- **For ns_blowup.** This is **the closest analytic counterpart** to
+  the campaign's empirical finding that alignment tightens with
+  resolution. It is *time*-along-trajectory, not *N*-along-resolution,
+  and the rate depends on the local Lyapunov / strain spectrum. It
+  justifies exponential-in-time tightening but does *not* predict the
+  $N^{-\alpha_\theta}$ scaling directly.
+
+### A.2 Grujić 2026 (arXiv:2609.05720, arXiv:2607.08866)
+- **Titles.** *On Decay of the Local Mean Oscillations of the
+  Vorticity Direction in Critical Navier–Stokes Flows* (4 Sep 2026);
+  companion *Logarithmic Depletion of Vortex Stretching and Singularity
+  Evasion in the 3D Navier–Stokes Equations* (9 Jul 2026). Author
+  Z. Grujić.
+- **Result (transfer theorem).** Suppose a critical point-singularity of
+  NSE has vorticity direction $\hat\xi$ in the logarithmically-weighted
+  BMO space $\mathrm{bmo}_{1/|\log r|}$ at the inner scale. Then
+  regularity at the core (singular time) is controlled by
+  $\|\hat\xi - e\|_{\mathrm{bmo}_{1/|\log r|}}(\mathrm{core}) \le
+  (\text{logarithmic time-modulus of } \hat\xi \text{ at inner scale}) +
+  \|P_{\hat\xi^\perp} S \hat\xi\|$,
+  where $P_{\hat\xi^\perp}$ projects orthogonal to $\hat\xi$. The
+  *tangential strain vanishes exactly* when $\hat\xi$ is an eigenvector
+  of $S$ — so logarithmic alignment with any eigenvector (in
+  particular the intermediate one observed in DNS) closes the regularity
+  argument. The time-modulus transferred is **logarithmic**:
+  $\|\hat\xi - e\|_{\mathrm{bmo}_{1/|\log r|}}$ decays like $\|(\log t)^{-1}\|$.
+- **For ns_blowup.** The angle-measurement is the $\mathrm{bmo}$ modulus
+  in *space*; the transfer is *from time* (temporal log-modulus of the
+  direction at the inner scale). The rate is logarithmic in $t$, **not
+  polynomial in $N$**. Conceptual match (alignment → less stretching →
+  regularity); not a quantitative match for our empirical
+  $N^{-\alpha_\theta}$.
+
+### A.3 Historical kinematics (for context)
+- **Constantin–Fefferman 1993.** Threshold regularity: Lipschitz
+  vorticity direction on $\{|\omega| \ge M\}$ ⟹ no blowup. No decay rate.
+- **Galanti–Gibbon–Heritage 1997.** Closest classical "rate" result.
+  For the (α, χ) system (α = $\hat\xi \cdot S \hat\xi$, χ =
+  $\hat\xi \times S \hat\xi$), $D\tan\phi/Dt = -\alpha \tan^3\phi +
+  \dots$ — alignment-driving term. *Qualitative attractor statement*,
+  conditional on slowly-varying perturbations; no explicit rate in $N$.
+- **Beale–Kato–Majda 1984.** $\int_0^T \|\omega\|_{L^\infty} dt = \infty$
+  is necessary for Euler blowup. No alignment angle.
+
+### A.4 The published / empirical gap (publishable as new observation)
+
+There is **no published analytic estimate** of the form
+$\theta(t) \le C \cdot N^{-\alpha_\theta}$ for the spectral discretisation,
+and the closest available analytic results (Haller 2024,
+Grujić 2026) bound the alignment angle in *time* (exponential and
+logarithmic respectively), not in *resolution*.
+
+The campaign's empirical finding that $\theta(\omega_{\max})$ at the
+max-vorticity point scales as $N^{-\alpha_\theta}$ with $\alpha_\theta \in [0.7, 2.4]$
+across three IC families (documented in §3 above) therefore has
+**no analytic counterpart** in the current literature. The natural
+"bridge paper" between the empirical scaling and the analytic
+time-modulus results would have to bound the *time-to-resolve* of a
+narrow alignment region as a function of $N$ — a question that
+Haller 2024 and Grujić 2026 both avoid by working in the
+continuous / point-singularity setting.
+
+**Honest assessment.** Our empirical $\alpha_\theta \in [0.7, 2.4]$
+is *consistent with* the spirit of Haller 2024 / Grujić 2026
+(alignment is a regularizing mechanism), but **no published paper
+predicts the $N^{-\alpha}$ form** of the decay we observe. This is
+**publishable as a new observation**, with the right framing:
+"alignment angle tightens with spectral resolution at a power-law
+rate $\alpha_\theta \in [0.7, 2.4]$ across three IC families in the
+truncated spectral NS scheme; no analytic bound of this form
+currently exists in the literature."
+
+### A.5 File pointers
+
+- `ALIGNMENT_DECAY_LITERATURE_2026.md` — full 345-line paper-by-paper
+  survey (10 papers, plus DNS / experimental literature for context).
+- `data/constantin_iyer_alignment.npz` — raw time series for the
+  empirical $\alpha_\theta$ measurements.
+- `data/constantin_iyer_scatter.png` and
+  `data/constantin_iyer_timeseries.png` — visualisations.

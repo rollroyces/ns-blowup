@@ -171,6 +171,80 @@ This campaign formalizes **two** of these (BdV and CI) and a **composite** of bo
 | Smart-IC search | **Done** — 8 candidates, no finite-N blowup found |
 | Solving the Clay problem | **Not done** — beyond AI capabilities on a laptop |
 
+
+## 2026 field context (added 2026-09-10)
+
+This campaign's contribution and its limitations are best understood
+against the **Sep 2026 paradigm shift** in the NS regularity field.
+A literature survey (`LITERATURE_2026.md`) of the post-2018 record
+finds:
+
+1. **Alpöge–Buckmaster (Sep 2026)** posted three preprints
+   (IPM, 2D Boussinesq, 3D incompressible Euler with smooth forcing,
+   hosted at cims.nyu.edu/~tristanb/). They prove **finite-time
+   blowup with smooth forcing** for three model equations using a
+   Córdoba–Martínez-Zoroa iterative ansatz. **Lean formalisation is
+   being attempted** for at least two of the three. The unforced-3D-NS
+   Clay Millennium problem remains open.
+
+2. **Coiculescu–Palasek (Inventiones 244, 165–219, April 2026 issue,
+   online 12 Dec 2025; DOI 10.1007/s00222-025-01396-z; arXiv:2503.14699).**
+   Non-uniqueness of two distinct smooth NS solutions from critical
+   BMO$^{-1}$ data. Mechanism based on Palasek's dyadic-NS work; the
+   construction is *not* convex integration. **Vlad Vicol is NOT an
+   author** of this paper (prior confusion corrected).
+
+3. **OpenAI (8 Sep 2026).** Announced a forced NS blowup claim
+   (166-page PDF + Lean repo at github.com/openai/NavierStokesAndEuler,
+   targets Clay alternatives C/D). **Disputed; NOT accepted by Clay.**
+   The Clay Millennium problem remains officially open. Buckmaster
+   publicly states that the underlying forced-blowup idea traces to
+   Córdoba–Martínez-Zoroa and that OpenAI only pivoted to that line
+   after hearing the Buckmaster–Alpöge rumor.
+
+4. **The field has shifted.** The centre of gravity has moved from
+   *constructive regularity proofs* to *constructive blowup
+   constructions*. No post-2018 paper has used Tao 2016 as the
+   starting point for a constructive regularity proof for un-averaged
+   3D NS.
+
+### What this means for the `ns_blowup` campaign
+
+The campaign's framing — **Lean formalisation of the truncated
+spectral NS scheme, with Tao 2016 as the irreducible axiom** — is
+**even more clearly aligned** with the post-Sep-2026 field than it
+was when the campaign started. The Alpöge–Buckmaster and OpenAI
+programmes are using cascade machinery to *construct* singularities;
+the campaign uses the same machinery (Tao's averaging) to *prove a
+no-go* on regularity proofs that use only harmonic analysis + energy.
+Both are valid uses of the same underlying mathematics; the campaign's
+choice is the conservative one that does not require belief in
+singularity formation.
+
+The campaign does **not** solve the Clay Millennium problem. It
+does **not** contribute to OpenAI's claimed blowup proof. It does
+**not** directly engage with Coiculescu–Palasek non-uniqueness. It
+*does* document, in Lean, the discrete Ladyzhenskaya inequality, the
+vortex-stretching identity, and a bridge theorem (in
+`VortexRegularity.lean`) that combine these with a Serrin-type
+integrability estimate to derive smoothness under explicit
+assumptions — i.e. the formal infrastructure that future work could
+build on. This is the honest scope of the contribution.
+
+### What is publishable from this campaign as a "new observation"
+
+The campaign's empirical finding (CONSTANTIN_IYER_FINDINGS.md §3)
+that the alignment angle at the max-vorticity point tightens with
+resolution as $\theta(\omega_{\max}) \sim N^{-\alpha_\theta}$ with
+$\alpha_\theta \in [0.7, 2.4]$ across three IC families has
+**no analytic counterpart** in the current literature
+(`ALIGNMENT_DECAY_LITERATURE_2026.md`). The closest analytic results
+are Haller 2024 (exponential-in-time) and Grujić 2026
+(logarithmic-in-time), both for *point-singularity* settings, not for
+the *truncated spectral regime*. This power-law alignment decay is
+publishable as a new observation.
+
+
 ## What's needed for the Clay problem (not done)
 
 A Clay-prize proof requires at least one of:
