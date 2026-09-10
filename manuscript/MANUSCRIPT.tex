@@ -88,7 +88,7 @@ resolution is out of scope. The Clay problem remains open.
 
 \section{Abstract}
 
-We investigate the finite-time blowup candidate of Hou & Luo (2014) for the
+We investigate the finite-time blowup candidate of Hou \& Luo (2014) for the
 3D axisymmetric Navier–Stokes equations with swirl. Using a spectral Fourier
 method on a periodic box, we perform a multi-resolution, multi-viscosity,
 multi-IC scaling study at grid resolutions \(N \in \{64, 128, 192\}\), with
@@ -117,11 +117,11 @@ all time (global regularity) or whether some smooth initial data develop a
 finite-time singularity (blowup). This question remains open despite 90 years
 of effort.
 
-In a series of papers starting with Hou & Luo (2014), a specific class of
+In a series of papers starting with Hou \& Luo (2014), a specific class of
 axisymmetric-with-swirl initial conditions was shown numerically to develop
 extreme vorticity growth in finite time. The reported blowup times lie in
 \(T^* \in [0.025, 0.04]\) depending on the exact IC and viscosity
-(Hou, Luo & Wang 2022). These computations were performed at resolutions
+(Hou, Luo \& Wang 2022). These computations were performed at resolutions
 up to \(2048^3\) with \(10{,}000{+}\) CPU-hours per run, which is prohibitive
 for independent verification by smaller groups.
 
@@ -170,8 +170,10 @@ with \(A = 5\). Initial max\(|\omega| \approx 190\) at \(N = 128\) — about
 
 \textbf{IC3 — Single vortex with axial perturbation.} Combines axisymmetric
 swirl with an axisymmetry-breaking \(u_z\) perturbation:
-\begin{equation*}u_\theta(r, z, 0) = A \sin(\pi r) \exp(-z^2 / \sigma^2), \quad\end{equation*}
-u_z(r, z, 0) = \varepsilon \cos(\pi z / L) \sin(\pi r)$$
+\begin{equation*}
+u_\theta(r, z, 0) = A \sin(\pi r) \exp(-z^2 / \sigma^2), \quad
+u_z(r, z, 0) = \varepsilon \cos(\pi z / L) \sin(\pi r)
+\end{equation*}
 with \(A = 5\), \(\varepsilon\) small. The \(u_z\) perturbation is required
 because axisymmetric flow has zero vortex-stretching term.
 
@@ -179,25 +181,31 @@ because axisymmetric flow has zero vortex-stretching term.
 \subsection*{2.3 Discretization}
 \addcontentsline{toc}{subsection}{2.3 Discretization}
 
+\begin{itemize}
 \item **Spatial:** Fourier spectral on a uniform $N^3$ grid with 2/3-rule
   dealiasing.
 \item **Temporal:** Semi-implicit RK4 with integrating factor for the viscous
   term:
-\begin{equation*}\hat u(t + dt) = e^{-\nu k^2 dt} \cdot \left[\hat u(t) +\end{equation*}
-  \frac{dt}{6}(k_1 + 2k_2 + 2k_3 + k_4)\right]$$
+\begin{equation*}
+\hat u(t + dt) = e^{-\nu k^2 dt} \cdot \left[\hat u(t) +
+  \frac{dt}{6}(k_1 + 2k_2 + 2k_3 + k_4)\right]
+\end{equation*}
   where \(k_1, \ldots, k_4\) are the RK4 stages of the convective term
   computed in physical space via spectral differentiation.
+\end{itemize}
 
 
 \subsection*{2.4 Implementation}
 \addcontentsline{toc}{subsection}{2.4 Implementation}
 
+\begin{itemize}
 \item **Pure NumPy** reference implementation for correctness.
 \item **PyTorch MPS** implementation for Apple M-series GPU acceleration
   (\(\sim\)15–30× speedup over NumPy).
 \item **complex64** precision throughout (Metal framework does not support
   complex128).
 \item All code open-source under MIT license.
+\end{itemize}
 
 
 \section{3. Calibration}
@@ -237,16 +245,16 @@ and track \(\max|\omega|(t)\). The cross-resolution ratio is:
 
 \begin{table}[h]
 \centering
-\begin{tabular}{lllllllll}
+\begin{tabular}{lccccc}
 \toprule
-$t$ & $N = 64$ $\max\ & \omega\ & $ & $N = 128$ $\max\ & \omega\ & $ & Ratio & Excess above $2.0$ \\
+\(t\) & \(N=64\) \(\max|\omega|\) & \(N=128\) \(\max|\omega|\) & Ratio & Excess above \(2.0\) \\
 \midrule
-0.000 & 40.49 & 80.38 & 1.985 & \(-0.8\%\) &  &  &  &  \\
-0.020 & 41.83 & 86.36 & 2.065 & \(+3.2\%\) &  &  &  &  \\
-0.040 & 43.81 & 93.84 & 2.142 & \(+7.1\%\) &  &  &  &  \\
-0.060 & 46.00 & 99.50 & **2.163** & **\(+8.2\%\) (peak)** &  &  &  &  \\
-0.080 & 48.06 & 103.30 & 2.149 & \(+7.5\%\) (declining) &  &  &  &  \\
-0.100 & 49.88 & 105.78 & 2.121 & \(+6.0\%\) (declining) &  &  &  &  \\
+0.000 & 40.49 & 80.38 & 1.985 & \(-0.8\%\) \\
+0.020 & 41.83 & 86.36 & 2.065 & \(+3.2\%\) \\
+0.040 & 43.81 & 93.84 & 2.142 & \(+7.1\%\) \\
+0.060 & 46.00 & 99.50 & \textbf{2.163} & \textbf{\(+8.2\%\) (peak)} \\
+0.080 & 48.06 & 103.30 & 2.149 & \(+7.5\%\) (declining) \\
+0.100 & 49.88 & 105.78 & 2.121 & \(+6.0\%\) (declining) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -265,15 +273,15 @@ apparent \(N=128/N=64\) ratio (both grids saturate).
 
 \begin{table}[h]
 \centering
-\begin{tabular}{lllll}
+\begin{tabular}{lll}
 \toprule
-$t$ & $\max\ & \omega\ & $ & Growth factor \\
+\(t\) & \(\max|\omega|\) & Growth factor \\
 \midrule
-0.000 & 80.38 & 1.000 &  &  \\
-0.040 & 93.84 & 1.168 &  &  \\
-0.080 & 103.30 & 1.285 &  &  \\
-0.120 & 108.36 & 1.348 &  &  \\
-0.150 & 110.89 & 1.380 &  &  \\
+0.000 & 80.38 & 1.000 \\
+0.040 & 93.84 & 1.168 \\
+0.080 & 103.30 & 1.285 \\
+0.120 & 108.36 & 1.348 \\
+0.150 & 110.89 & 1.380 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -314,7 +322,7 @@ We re-ran the \(N = 128\), \(\nu = 0.001\) case with \(dt = 2 \times 10^{-5}\)
 \centering
 \begin{tabular}{llll}
 \toprule
-$t$ & $dt = 5 \times 10^{-5}$ & $dt = 2 \times 10^{-5}$ & Rel diff \\
+\(t\) & \(dt = 5 \times 10^{-5}\) & \(dt = 2 \times 10^{-5}\) & Rel diff \\
 \midrule
 0.020 & 86.3637 & 86.3629 & \(9.5 \times 10^{-6}\) \\
 0.040 & 93.8439 & 93.8410 & \(3.1 \times 10^{-5}\) \\
@@ -338,12 +346,12 @@ At \(N = 128\), \(T = 0.04\):
 
 \begin{table}[h]
 \centering
-\begin{tabular}{lllll}
+\begin{tabular}{lll}
 \toprule
-$\nu$ & $\max\ & \omega\ & $ & Ratio \\
+\(\nu\) & \(\max|\omega|\) & Ratio \\
 \midrule
-0.001 & 93.84 & 1.000 &  &  \\
-0.0005 & 96.01 & 1.023 &  &  \\
+0.001 & 93.84 & 1.000 \\
+0.0005 & 96.01 & 1.023 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -361,13 +369,13 @@ At \(N = 128\), \(\nu = 0.001\), \(T = 0.04\):
 
 \begin{table}[h]
 \centering
-\begin{tabular}{llllllll}
+\begin{tabular}{llll}
 \toprule
-IC & Initial $\max\ & \omega\ & $ & Final $\max\ & \omega\ & $ & Growth \\
+IC & Initial \(\max|\omega|\) & Final \(\max|\omega|\) & Growth \\
 \midrule
-IC1 (simplified baseline) & 80.4 & 93.8 & \(1.168\times\) &  &  &  &  \\
-**IC2 (antiparallel vortex pair)** & 190.0 & 276.8 & \(\mathbf{1.457\times}\) &  &  &  &  \\
-**IC3 (single vortex + axial pert)** & 190.0 & 273.5 & \(\mathbf{1.439\times}\) &  &  &  &  \\
+IC1 (simplified baseline) & 80.4 & 93.8 & \(1.168\times\) \\
+**IC2 (antiparallel vortex pair)** & 190.0 & 276.8 & \(\mathbf{1.457\times}\) \\
+**IC3 (single vortex + axial pert)** & 190.0 & 273.5 & \(\mathbf{1.439\times}\) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -600,12 +608,12 @@ numerical and Lean-based investigation on commodity hardware.
 All code, data, and figure-generation scripts released under MIT
 license. Reproduces all results in this paper with:
 
-```
+\begin{verbatim}
 python benchmarks/taylor_green_mps.py    # Phase 0A
 python benchmarks/kolmogorov_mps.py      # Phase 0B
 python benchmarks/hou_louo_ic.py         # IC1, resolution scaling
 python benchmarks/hou_louo_2014_ic.py    # IC2, IC3
-```
+\end{verbatim}
 
 The 12 trajectory \texttt{.npz} files in \texttt{data/} contain all numerical
 results. The Lean 4 formalization of the spectral NS scheme is in
@@ -626,28 +634,28 @@ Fourier transform machinery that made the Lean formalization tractable.
 
 \section{References}
 
-1. Hou, T. Y., & Luo, G. (2014). On the finite-time blowup of a 1D model
+1. Hou, T. Y., \& Luo, G. (2014). On the finite-time blowup of a 1D model
    of the axisymmetric 3D Euler/Navier–Stokes equations. \textit{PNAS} 111(35).
 2. Hou, T. Y., et al. (2022). Potentially singular behavior of the 3D
    Navier–Stokes equations. \textit{Foundations of Computational Mathematics}.
 3. Kerr, R. M. (1993). Evidence for a singularity of the three-dimensional,
    incompressible Euler equations. \textit{Physics of Fluids A} 5(7).
-4. Chen, J., & Glimm, J. (2021). Self-similar blowup solutions for the 1D
+4. Chen, J., \& Glimm, J. (2021). Self-similar blowup solutions for the 1D
    axisymmetric Navier–Stokes equations. \textit{arXiv:2105.13445}.
 5. Kolmogorov, A. N. (1941). The local structure of turbulence in
-   incompressible viscous fluid for very large Reynolds' numbers. *Dokl.
-   Akad. Nauk SSSR* 30.
+   incompressible viscous fluid for very large Reynolds' numbers. \textit{Dokl.
+   Akad. Nauk SSSR} 30.
 6. Frisch, U. (1995). \textit{Turbulence: The Legacy of A. N. Kolmogorov}.
    Cambridge University Press.
 7. Tao, T. (2016). Finite time blowup for an averaged three-dimensional
    Navier–Stokes equation. \textit{J. Amer. Math. Soc.} 29.
-8. Kukavica, I., & Vicol, V. (2017). On the absence of anomalous dissipation
+8. Kukavica, I., \& Vicol, V. (2017). On the absence of anomalous dissipation
    in the Navier–Stokes equations. \textit{J. Eur. Math. Soc.}
 9. Leray, J. (1934). Sur le mouvement d'un liquide visqueux emplissant
    l'espace. \textit{Acta Math.} 63.
-10. Caffarelli, R., Kohn, R., & Nirenberg, L. (1982). Partial regularity of
-    suitable weak solutions of the Navier–Stokes equations. *Comm. Pure
-    Appl. Math.* 35.
+10. Caffarelli, R., Kohn, R., \& Nirenberg, L. (1982). Partial regularity of
+    suitable weak solutions of the Navier–Stokes equations. \textit{Comm. Pure
+    Appl. Math.} 35.
 
 \section*{Code and data availability}
 All code, data, and figure-generation scripts are released under the MIT
