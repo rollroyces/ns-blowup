@@ -7,9 +7,9 @@
 
 \title{Lean~4 Formalization and Reproducible Empirical Study of the\\
 Hou--Luo Navier--Stokes Blowup Candidate on Apple Silicon:\\
-A Spectral Investigation with 170 Proved Theorems}
+A Spectral Investigation with 177 Proved Theorems}
 \author{Royce \and Hermes Agent (computational infrastructure)}
-\date{2026-09-10}
+\date{2026-09-11}
 
 \begin{document}
 \maketitle
@@ -39,9 +39,9 @@ blowup at the resolutions, viscosities, and time horizons reachable on a
 single Apple M4 laptop.
 
 Lean~4 / Mathlib~4 formalization. We complement the numerics with a
-formal-methods contribution: \textbf{170 proved theorems across 12 files},
+formal-methods contribution: \textbf{177 proved theorems across 13 files},
 \textbf{0 sorries}, and \textbf{1 irreducible axiom} (Tao's 2016 averaged-NS
-blowup theorem), totalling 6248 lines of Lean. The formalization establishes,
+blowup theorem), totalling 6474 lines of Lean. The formalization establishes,
 for the \emph{truncated spectral NS scheme at finite $N$}: (i)~the
 integrating-factor time-stepping is unconditionally stable, (ii)~the Parseval
 identity holds, (iii)~the spectral projection at $N=2$ is the identity on
@@ -79,7 +79,12 @@ are proved in Lean, and
 spectral-projection convergence argument: Parseval on finite mode subsets,
 discrete Ladyzhenskaya on projections, monotone convergence of
 $\ell^2$-energies. The $L^4$ side requires Sobolev embedding + DCT,
-documented as the next layer.
+documented as the next layer, and
+(xv)~\textbf{the discrete Sobolev embedding}
+(6 theorems, SobolevEmbeddingDiscrete.lean) --- formalizes
+$\|u\|_{L^4}^4 \le 2 \cdot \|u\|_{L^2}^2 \cdot \|\nabla u\|_{L^2}^2$ for
+the truncated scheme. Closes the $L^4$-side of the
+discrete-to-continuous bridge.
 
 \textbf{Scope.} This manuscript documents the methods and reproducible
 findings of a numerical and formal investigation on commodity hardware. It
@@ -431,7 +436,7 @@ do not support such a claim.
   parameter regime.
 \item **Clay Millennium problem:** This work does not address the regularity
   question --- that requires a theorem, not numerics.
-\item **Lean scope --- truncated scheme only:** All 170 Lean theorems are
+\item **Lean scope --- truncated scheme only:** All 177 Lean theorems are
   stated and proved for the \emph{truncated} spectral NS scheme at finite
   resolution $N$. They do not address the continuous NS equation at
   infinite resolution. The truncated scheme is a finite ODE system on a
@@ -489,10 +494,10 @@ more compute than this campaign.
 What this work \emph{does} contribute is a complete Lean~4 / Mathlib~4
 formalization of the truncated spectral NS scheme and one specific
 structural component of the discrete-to-continuous bridge. The Lean
-to-continuous bridge. The Lean component comprises \textbf{170 proved theorems across 12 files} with
+to-continuous bridge. The Lean component comprises \textbf{177 proved theorems across 13 files} with
 \textbf{0 sorries} and \textbf{1 irreducible axiom}
 (\texttt{tao\_averaged\_blowup} in TaoNoGo.lean), totalling
-\textbf{6248 lines}:
+\textbf{6474 lines}:
 \begin{itemize}
 \item \texttt{SpectralNS.lean} (885 lines, 29 theorems): the integrating-factor
   time-stepping is unconditionally stable, the Parseval identity holds,
@@ -579,6 +584,17 @@ to-continuous bridge. The Lean component comprises \textbf{170 proved theorems a
   Ladyzhenskaya on any $S \subseteq \mathrm{projectionSet}\ N$ (via
   \texttt{ladyzhenskaya\_split\_M1}), and $\ell^2$-monotone convergence.
   The $L^4$ side requires Sobolev embedding + DCT, documented in the file.
+\item \texttt{SobolevEmbeddingDiscrete.lean} (228 lines, 6 theorems, 0 axioms):
+  the discrete Sobolev embedding on the truncated spectral scheme. Proves
+  $\sum_k \|\hat u(k)\|^4 \le 2 \cdot \sum_k \|\hat u(k)\|^2 \cdot
+   \sum_k \|k\|^2 \|\hat u(k)\|^2$ as the Lean theorem
+  \texttt{l4EnergyS\_le\_two\_l2EnergyS\_h1EnergyS}. Includes the per-mode
+  bound $\|\hat u(k)\|^2 \le \|k\|^2 \cdot \|\hat u(k)\|^2$ for $k \ne 0$,
+  the $L^2 \le H^1$ inequality on positive spectrum, and the corollary on
+  spectral projections. The constant $2$ is explicit (not optimal --- the
+  optimal $K_3$ requires Gagliardo--Nirenberg continuous theory). Combined
+  with \texttt{DiscreteContinuousBridge.lean} (L$^2$ side), this closes
+  the $L^4$ side of the discrete-to-continuous Ladyzhenskaya bridge.
 \end{itemize}
 
 \textbf{What this code base is.} The Lean formalization is a complete
